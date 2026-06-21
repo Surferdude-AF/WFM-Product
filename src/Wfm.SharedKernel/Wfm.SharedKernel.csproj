@@ -1,0 +1,5 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Minimal shared kernel: only universal contracts/types. No god utils hub (ADR-007). -->
+
+</Project>

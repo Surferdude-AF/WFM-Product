@@ -1,0 +1,15 @@
+# Normalize line endings: LF in the repo, checked out native on each OS.
+* text=auto eol=lf
+
+# Tools that prefer CRLF on Windows.
+*.sln    text eol=crlf
+*.ps1    text eol=crlf
+
+# Binary assets (never normalize).
+*.png    binary
+*.jpg    binary
+*.jpeg   binary
+*.gif    binary
+*.ico    binary
+*.pdf    binary
+*.zip    binary

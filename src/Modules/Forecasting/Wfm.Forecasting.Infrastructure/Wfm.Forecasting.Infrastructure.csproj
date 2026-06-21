@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Adapters (EF/Postgres, external I/O) implementing the Application ports.
+       Depends inward on Application (which carries Domain + SharedKernel). -->
+  <ItemGroup>
+    <ProjectReference Include="..\Wfm.Forecasting.Application\Wfm.Forecasting.Application.csproj" />
+  </ItemGroup>
+
+</Project>

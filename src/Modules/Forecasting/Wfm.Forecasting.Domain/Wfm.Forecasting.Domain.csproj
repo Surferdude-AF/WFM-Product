@@ -1,0 +1,7 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Pure domain core: framework-free, I/O-free, deterministic. No project or
+       framework references by design (ADR-005). Dependencies point toward it,
+       never out of it. -->
+
+</Project>

@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Use cases / ports. Depends on the domain core and the shared kernel only. -->
+  <ItemGroup>
+    <ProjectReference Include="..\Wfm.Forecasting.Domain\Wfm.Forecasting.Domain.csproj" />
+    <ProjectReference Include="..\..\..\Wfm.SharedKernel\Wfm.SharedKernel.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,30 @@
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+indent_size = 4
+
+[*.{json,yml,yaml,csproj,props,targets}]
+indent_size = 2
+
+[*.{md}]
+trim_trailing_whitespace = false
+
+[*.cs]
+# File-scoped namespaces and modern C# idioms (quality mode).
+csharp_style_namespace_declarations = file_scoped:warning
+csharp_style_var_for_built_in_types = true:suggestion
+csharp_prefer_braces = true:warning
+dotnet_sort_system_directives_first = true
+dotnet_separate_import_directive_groups = false
+dotnet_style_qualification_for_field = false:warning
+dotnet_style_qualification_for_property = false:warning
+csharp_using_directive_placement = outside_namespace:warning
+
+# Naming: interfaces start with I, async methods end with Async are conventional;
+# keep analyzers from being noisy on generated/empty assemblies.
+dotnet_diagnostic.CA1014.severity = none
