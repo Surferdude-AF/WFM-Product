@@ -1,3 +1,5 @@
+using System.Diagnostics;
+
 namespace Wfm.IntegrationTests;
 
 // A [Fact] that skips (rather than fails) when no Docker engine is reachable, so
@@ -20,24 +22,39 @@ internal static class DockerEnvironment
 
     private static bool Detect()
     {
-        if (!string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("DOCKER_HOST")))
+        // Ask the daemon for its server version: zero exit only when the engine is
+        // actually running. (Docker Desktop can leave the pipe/socket present while
+        // the engine is stopped, so an endpoint connect isn't enough.)
+        try
         {
-            return true;
-        }
-
-        if (OperatingSystem.IsWindows())
-        {
-            try
+            using var process = new Process();
+            process.StartInfo = new ProcessStartInfo("docker")
             {
-                return Directory.EnumerateFiles(@"\\.\pipe\")
-                    .Any(pipe => pipe.Contains("docker_engine", StringComparison.OrdinalIgnoreCase));
-            }
-            catch (IOException)
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                UseShellExecute = false,
+                CreateNoWindow = true,
+            };
+            process.StartInfo.ArgumentList.Add("version");
+            process.StartInfo.ArgumentList.Add("--format");
+            process.StartInfo.ArgumentList.Add("{{.Server.Version}}");
+
+            if (!process.Start())
             {
                 return false;
             }
-        }
 
-        return File.Exists("/var/run/docker.sock");
+            if (!process.WaitForExit(TimeSpan.FromSeconds(10)))
+            {
+                try { process.Kill(entireProcessTree: true); } catch { /* best effort */ }
+                return false;
+            }
+
+            return process.ExitCode == 0;
+        }
+        catch
+        {
+            return false;
+        }
     }
 }
