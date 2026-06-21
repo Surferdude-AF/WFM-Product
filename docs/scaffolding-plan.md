@@ -5,10 +5,10 @@ The build roadmap, distilled from the ADRs. **Principle:** stand up the verifica
 Each step is a small, green, committable PR (trunk-based, ADR-009).
 
 ## Phase A — Repo + guardrails (verification loops, before any feature)
-1. **Repo hygiene** — `.gitignore`, `.editorconfig`, README. Branch protection: green-CI-to-merge. *(`.gitignore` + README already in place.)*
+1. **Repo hygiene** — `.gitignore`, `.editorconfig`, README. ✔ Merge config done (squash default, merge commits off → linear history, auto-delete branches). **Branch protection (green-CI-to-merge, PR-only) is deferred:** GitHub gates it behind Pro/public for private repos, so the rule holds by discipline (CLAUDE.md) for now — CI runs on every PR but doesn't hard-block merge. Revisit on Pro upgrade / going public / first collaborator.
 2. **Context in place** — `/docs/adr/` (ADR-001..011) and the production `CLAUDE.md` are already here. ✔
-3. **Solution skeleton (ADR-007 module map made real)** — a .NET solution with the hexagonal split per module: e.g. `Forecasting.Domain` / `.Application` / `.Infrastructure`, an `Api` host, a minimal `SharedKernel`, and the **React/TS frontend** app folder. Empty but bounded.
-4. **CI gate (ADR-009)** — GitHub Actions: restore → build → format/analyzers → test. Plus **NetArchTest** (boundary rules) and an **xUnit + CsCheck + Testcontainers.NET** harness with one trivial passing test. *Done when:* a PR goes red on a forbidden cross-module reference, green otherwise.
+3. **Solution skeleton (ADR-007 module map made real)** — a .NET solution with the hexagonal split per module: e.g. `Forecasting.Domain` / `.Application` / `.Infrastructure`, an `Api` host, a minimal `SharedKernel`, and the **React/TS frontend** app folder. Empty but bounded. ✔
+4. **CI gate (ADR-009)** — GitHub Actions: restore → build → format/analyzers → test. Plus **NetArchTest** (boundary rules) and an **xUnit + CsCheck + Testcontainers.NET** harness with one trivial passing test. *Done when:* a PR goes red on a forbidden cross-module reference, green otherwise. ✔ green proven on CI; red-on-violation demo still pending.
 
 ## Phase B — Walking skeleton (thinnest end-to-end slice)
 5. **DB + migrations (ADR-002/004)** — EF Core + Npgsql, local **Docker Postgres** via Compose, first migration (`tenants` + one domain table). Migrations run in integration tests (Testcontainers) and the pipeline.
