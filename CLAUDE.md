@@ -36,8 +36,9 @@ The production WFM product: a **modular monolith** — **C#/.NET (ASP.NET Core) 
 
 ## Git & workflow
 - Trunk-based; short-lived branches; commit at checkpoints.
-- **Commit freely at milestones** (a green test, a built story, a passing CI gate, a completed scaffolding step) — no per-commit approval needed. **Never push without explicit go-ahead** (outward-facing). End commit messages with the `Co-Authored-By` line.
+- **Commit freely at milestones** (a green test, a built story, a passing CI gate, a completed scaffolding step) — no per-commit approval needed. End commit messages with the `Co-Authored-By` line.
 - **Commit messages say what the change *enables*** (the capability/outcome), not a file-by-file list — the diff already shows the files.
+- **Push feature branches and open PRs freely** so CI runs; **never merge or push to `main` directly** — a human reviews and merges. (`main` stays always-deployable.)
 - **Continuous *delivery*** — every green merge is deployable; **prod ships behind a human approval gate**, not automatically. (ADR-009)
 - Migrations run in the pipeline (forward-only / expand-contract).
 

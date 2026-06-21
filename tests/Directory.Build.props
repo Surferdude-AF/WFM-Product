@@ -1,0 +1,16 @@
+<Project>
+
+  <!-- Chain to the repo-root props, then relax for test projects. -->
+  <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))" />
+
+  <PropertyGroup>
+    <!-- Keep analyzers on, but don't gate the build on test-harness warnings. -->
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+    <!-- Test conventions: underscore_method_names (CA1707) and public test
+         classes (CA1515) are intentional. -->
+    <NoWarn>$(NoWarn);CA1707;CA1515</NoWarn>
+  </PropertyGroup>
+
+</Project>
