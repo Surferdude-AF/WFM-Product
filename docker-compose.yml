@@ -15,5 +15,29 @@ services:
       timeout: 5s
       retries: 5
 
+  # One-shot: applies forward-only migrations as the DB owner (creates schema,
+  # the wfm_app role, and the RLS policies), then exits. Runs before the API.
+  migrate:
+    build: .
+    depends_on:
+      postgres:
+        condition: service_healthy
+    entrypoint:
+      - ./efbundle
+      - --connection
+      - "Host=postgres;Port=5432;Database=wfm;Username=postgres;Password=postgres"
+    restart: "no"
+
+  # The API connects as the RLS-subject app role, never the owner (ADR-001).
+  api:
+    build: .
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    environment:
+      ConnectionStrings__Wfm: "Host=postgres;Port=5432;Database=wfm;Username=wfm_app;Password=wfm_app"
+    ports:
+      - "8080:8080"
+
 volumes:
   wfm-pgdata:

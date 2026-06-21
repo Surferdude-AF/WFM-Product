@@ -6,4 +6,11 @@
     <ProjectReference Include="..\Modules\Forecasting\Wfm.Forecasting.Infrastructure\Wfm.Forecasting.Infrastructure.csproj" />
   </ItemGroup>
 
+  <!-- Pin EF Core so the host's transitive graph unifies on the version
+       Infrastructure is built against (Npgsql's floor would otherwise win). -->
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.9" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="10.0.9" />
+  </ItemGroup>
+
 </Project>
