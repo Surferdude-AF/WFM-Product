@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# One in-flight run per ref; newer pushes cancel older runs.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-test:
+    name: build + test (boundaries, unit, integration)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      - name: Restore
+        run: dotnet restore WFM-Product.slnx
+
+      - name: Format check (analyzers + style)
+        run: dotnet format WFM-Product.slnx --verify-no-changes --no-restore
+
+      # warnings-are-errors is enforced per-project via Directory.Build.props
+      # (strict on src, relaxed on test harnesses), so no global flag here.
+      - name: Build
+        run: dotnet build WFM-Product.slnx --no-restore --configuration Release
+
+      # Docker is available on ubuntu-latest, so the Testcontainers integration
+      # suite runs for real here (it skips on dev machines without Docker).
+      - name: Test
+        run: dotnet test WFM-Product.slnx --no-build --configuration Release --verbosity normal

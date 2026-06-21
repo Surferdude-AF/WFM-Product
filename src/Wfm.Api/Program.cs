@@ -1,4 +1,9 @@
+using Wfm.Forecasting.Application;
+using Wfm.Forecasting.Infrastructure;
+
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddSingleton<IForecastStreamReader, InMemoryForecastStreamReader>();
 
 var app = builder.Build();
 
