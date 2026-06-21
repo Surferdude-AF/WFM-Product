@@ -1,0 +1,35 @@
+# --- .NET ---
+bin/
+obj/
+*.user
+*.suo
+*.userprefs
+.vs/
+artifacts/
+[Pp]ublish/
+*.nupkg
+
+# --- Node / React frontend ---
+node_modules/
+dist/
+build/
+.vite/
+coverage/
+*.tsbuildinfo
+
+# --- Env / secrets (never commit — ADR-011) ---
+.env
+.env.*
+!.env.example
+appsettings.*.local.json
+*.pfx
+*.key
+
+# --- OS / IDE ---
+.DS_Store
+Thumbs.db
+.idea/
+*.swp
+
+# --- Local runtime state ---
+docker-compose.override.yml
