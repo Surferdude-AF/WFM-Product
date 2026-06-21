@@ -1,7 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <!-- Pure domain core: framework-free, I/O-free, deterministic. No project or
-       framework references by design (ADR-005). Dependencies point toward it,
-       never out of it. -->
+  <!-- Pure domain core: framework-free, I/O-free, deterministic (ADR-005).
+       May use the framework-free SharedKernel (universal value types like
+       TenantId); never depends on the application, adapters, or host. -->
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Wfm.SharedKernel\Wfm.SharedKernel.csproj" />
+  </ItemGroup>
 
 </Project>

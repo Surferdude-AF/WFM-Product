@@ -18,11 +18,14 @@ public class BoundaryTests
     private const string SharedKernel = "Wfm.SharedKernel";
 
     [BoundaryFact]
-    public void Domain_depends_on_nothing_in_the_solution()
+    public void Domain_depends_only_on_the_shared_kernel()
     {
+        // The pure domain core may use SharedKernel building blocks (e.g. TenantId)
+        // -- the most stable, framework-free layer -- but never the application,
+        // adapters, or host. Framework-freeness is asserted separately.
         var result = Types.InAssembly(typeof(SkillId).Assembly)
             .Should()
-            .NotHaveDependencyOnAny(SharedKernel, Application, Infrastructure, Api)
+            .NotHaveDependencyOnAny(Application, Infrastructure, Api)
             .GetResult();
 
         Assert.True(result.IsSuccessful, Describe(result));

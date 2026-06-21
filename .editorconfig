@@ -28,3 +28,7 @@ csharp_using_directive_placement = outside_namespace:warning
 # Naming: interfaces start with I, async methods end with Async are conventional;
 # keep analyzers from being noisy on generated/empty assemblies.
 dotnet_diagnostic.CA1014.severity = none
+
+# EF Core migrations are tool-generated; don't subject them to style/format gates.
+[**/Migrations/*.cs]
+generated_code = true
