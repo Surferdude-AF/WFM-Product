@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="coverlet.collector" Version="6.0.4" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="10.0.9" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.9" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="10.0.9" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
+    <PackageReference Include="Npgsql" Version="10.0.3" />
+    <PackageReference Include="Testcontainers.PostgreSql" Version="4.12.0" />
+    <PackageReference Include="xunit" Version="2.9.3" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="3.1.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Xunit" />
+  </ItemGroup>
+
+  <!-- Acceptance tests drive the running host (ADR-006): they reference the API
+       composition root, never a module's internals. -->
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Wfm.Api\Wfm.Api.csproj" />
+    <ProjectReference Include="..\..\src\Modules\Forecasting\Wfm.Forecasting.Infrastructure\Wfm.Forecasting.Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>
