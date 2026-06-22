@@ -68,7 +68,7 @@ public class BaselineForecasterPropertyTests
 
     // History covering every weekday+interval for `weeks` prior weeks with constant
     // values, so every forecast key has samples and its weighted average is exact.
-    private static IReadOnlyList<HistoricalInterval> Covering(int weeks, int contacts, int aht)
+    private static List<HistoricalInterval> Covering(int weeks, int contacts, int aht)
     {
         var list = new List<HistoricalInterval>(weeks * 7 * 96);
         var start = WeekStart.AddDays(-7 * weeks);

@@ -58,7 +58,7 @@ public class OutlierDetectionPropertyTests
         Assert.True(unfiltered[0].Contacts > baseVolume);   // the spike distorts the unfiltered forecast
     }
 
-    private static IReadOnlyList<HistoricalInterval> Covering(int weeks, int contacts)
+    private static List<HistoricalInterval> Covering(int weeks, int contacts)
     {
         var list = new List<HistoricalInterval>(weeks * 7 * 96);
         var start = WeekStartUtc.AddDays(-7 * weeks);

@@ -1,3 +1,4 @@
+using System.Globalization;
 using CsCheck;
 using Wfm.Forecasting.Domain;
 
@@ -6,6 +7,10 @@ namespace Wfm.Forecasting.Domain.Tests;
 public class LocalizedForecasterTests
 {
     private static readonly DateOnly WeekStart = new(2026, 6, 8);
+
+    // Five prior Mondays at 09:00Z; in Berlin summer that is 11:00 local.
+    private static readonly string[] PriorMondays =
+        ["2026-05-04", "2026-05-11", "2026-05-18", "2026-05-25", "2026-06-01"];
 
     private static readonly Gen<IReadOnlyList<HistoricalInterval>> GenHistory =
         Gen.Select(Gen.Int[0, 4000], Gen.Int[0, 1000], Gen.Int[0, 5000],
@@ -42,10 +47,13 @@ public class LocalizedForecasterTests
     public void The_local_zone_shifts_the_seasonal_profile()
     {
         var berlin = SkillTimeZone.Of("Europe/Berlin");
-        // Five prior Mondays at 09:00Z; in Berlin summer that is 11:00 local (interval 44, not 36).
-        var history = new[] { "2026-05-04", "2026-05-11", "2026-05-18", "2026-05-25", "2026-06-01" }
+        // 09:00Z maps to 11:00 local in Berlin summer (interval 44, not 36).
+        var history = PriorMondays
             .Select(d => new HistoricalInterval(
-                new DateTimeOffset(DateTime.Parse(d + "T09:00:00"), TimeSpan.Zero), 50, 200))
+                new DateTimeOffset(
+                    DateOnly.ParseExact(d, "yyyy-MM-dd", CultureInfo.InvariantCulture).ToDateTime(new TimeOnly(9, 0)),
+                    TimeSpan.Zero),
+                50, 200))
             .ToList();
 
         var forecast = LocalizedForecaster.Forecast(history, berlin, WeekStart);
