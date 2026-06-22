@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.EntityFrameworkCore;
 using Wfm.Api;
 using Wfm.Forecasting.Application;
@@ -7,7 +8,12 @@ using Wfm.Forecasting.Infrastructure.Persistence;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddScoped<ITenantContext, HttpTenantContext>();
+builder.Services
+    .AddAuthentication(DevAuthenticationHandler.SchemeName)
+    .AddScheme<AuthenticationSchemeOptions, DevAuthenticationHandler>(DevAuthenticationHandler.SchemeName, null);
+builder.Services.AddAuthorization();
+
+builder.Services.AddScoped<ITenantContext, RouteTenantContext>();
 builder.Services.AddScoped<TenantSessionInterceptor>();
 builder.Services.AddDbContext<WfmDbContext>((sp, options) =>
     options
@@ -18,9 +24,18 @@ builder.Services.AddSingleton<IForecastStreamReader, InMemoryForecastStreamReade
 
 var app = builder.Build();
 
+app.UseAuthentication();
+app.UseAuthorization();
+
 app.MapGet("/health", () => Results.Ok(new { status = "ok" }));
 
-app.MapGet("/skills", async (ISkillCatalog catalog, CancellationToken cancellationToken) =>
+// Tenant-scoped surface: authenticated, and the URL tenant bound to the caller's
+// identity before the data layer is reached (ADR-008).
+var tenant = app.MapGroup("/t/{tenantId:guid}")
+    .RequireAuthorization()
+    .AddEndpointFilter<TenantMembershipFilter>();
+
+tenant.MapGet("/skills", async (ISkillCatalog catalog, CancellationToken cancellationToken) =>
 {
     var skills = await catalog.ListAsync(cancellationToken);
     return Results.Ok(skills.Select(s => new { id = s.Id.Value, name = s.Name }));
