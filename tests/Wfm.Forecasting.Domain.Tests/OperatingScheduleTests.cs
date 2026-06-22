@@ -30,7 +30,7 @@ public class OperatingScheduleTests
         return new OperatingSchedule(weekly, specials);
     }
 
-    private static IReadOnlyList<ForecastPoint> FlatWeek(DateOnly start, int contacts, int aht)
+    private static List<ForecastPoint> FlatWeek(DateOnly start, int contacts, int aht)
     {
         var list = new List<ForecastPoint>(7 * 96);
         var s = new DateTimeOffset(start.ToDateTime(TimeOnly.MinValue), TimeSpan.Zero);
