@@ -41,6 +41,9 @@ internal static class Fixtures
     public static GoldenOverlay LoadEventsOverlay(string file = "events-overlay.json")
         => JsonSerializer.Deserialize<GoldenOverlay>(File.ReadAllText(Path.Combine(Dir, file)))!;
 
+    public static GoldenErlang LoadErlang(string file = "erlang-staffing.json")
+        => JsonSerializer.Deserialize<GoldenErlang>(File.ReadAllText(Path.Combine(Dir, file)))!;
+
     public static IReadOnlyList<ForecastEvent> LoadEvents(string file = "events.json")
         => JsonSerializer.Deserialize<List<EventDto>>(File.ReadAllText(Path.Combine(Dir, file)))!
             .Select(e => new ForecastEvent(
@@ -104,3 +107,24 @@ internal sealed record EventDto(
     [property: JsonPropertyName("volume")] double Volume,
     [property: JsonPropertyName("aht")] double Aht,
     [property: JsonPropertyName("skills")] IReadOnlyCollection<string>? Skills);
+
+internal sealed record GoldenErlang(
+    [property: JsonPropertyName("staffing")] IReadOnlyList<GoldenStaffing> Staffing,
+    [property: JsonPropertyName("serviceLevel")] IReadOnlyList<GoldenServiceLevel> ServiceLevel);
+
+internal sealed record GoldenStaffing(
+    [property: JsonPropertyName("contacts")] int Contacts,
+    [property: JsonPropertyName("aht")] int Aht,
+    [property: JsonPropertyName("patience")] double Patience,
+    [property: JsonPropertyName("slPct")] double SlPct,
+    [property: JsonPropertyName("slSecs")] double SlSecs,
+    [property: JsonPropertyName("occCap")] double OccCap,
+    [property: JsonPropertyName("agents")] int Agents);
+
+internal sealed record GoldenServiceLevel(
+    [property: JsonPropertyName("agents")] int Agents,
+    [property: JsonPropertyName("contacts")] int Contacts,
+    [property: JsonPropertyName("aht")] int Aht,
+    [property: JsonPropertyName("patience")] double Patience,
+    [property: JsonPropertyName("withinSecs")] double WithinSecs,
+    [property: JsonPropertyName("sl")] double Sl);
