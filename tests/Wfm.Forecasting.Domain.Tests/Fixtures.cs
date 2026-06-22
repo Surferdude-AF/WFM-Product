@@ -47,6 +47,9 @@ internal static class Fixtures
     public static GoldenCompetition LoadCompetition(string file = "competition.json")
         => JsonSerializer.Deserialize<GoldenCompetition>(File.ReadAllText(Path.Combine(Dir, file)))!;
 
+    public static AccuracyBaseline LoadAccuracyBaseline(string file = "accuracy-baseline.json")
+        => JsonSerializer.Deserialize<AccuracyBaseline>(File.ReadAllText(Path.Combine(Dir, file)))!;
+
     public static IReadOnlyList<ForecastEvent> LoadEvents(string file = "events.json")
         => JsonSerializer.Deserialize<List<EventDto>>(File.ReadAllText(Path.Combine(Dir, file)))!
             .Select(e => new ForecastEvent(
@@ -153,3 +156,7 @@ internal sealed record GoldenMethod(
     [property: JsonPropertyName("std")] double Std,
     [property: JsonPropertyName("bias")] double Bias,
     [property: JsonPropertyName("scores")] IReadOnlyList<double> Scores);
+
+internal sealed record AccuracyBaseline(
+    [property: JsonPropertyName("historical")] double Historical,
+    [property: JsonPropertyName("cs")] double Cs);

@@ -72,7 +72,8 @@ Decomposes the one-line roadmap step ("port the pure domain core, test-first") i
 - **Invariants:** with <6 weeks → defaults to `seasonal-naive`; a registry of one method always selects that method; flat series → trend never wins (parsimony); selection is deterministic.
 - **Golden:** the competition result (chosen method, per-method accuracy/bias, thresholds) for both frozen series — `historical.csv` is expected to keep `seasonal-naive` (documented in ST-006).
 
-### 9h — Accuracy-regression gate (ADR-006 layer 3)
+### 9h — Accuracy-regression gate (ADR-006 layer 3) ✔ DONE
+*A data-anchored quality ratchet over **both** frozen series. The chosen method's backtest accuracy must stay within `0.5pt` (~⅓ of the fold std) of the committed baseline (`accuracy-baseline.json`: historical 88.5, CS 88.8). Runs in CI; complements the exact 9g golden ("did it change?") by guarding "did it get worse?". Ratchet: raise the baseline in the same PR when accuracy improves. The 0.5pt margin absorbs neutral refactor/float noise but catches a real 1–2pt regression.*
 - **Build:** a walk-forward backtest over the **frozen corpus** committed as a test fixture, asserting WMAPE does not cross a threshold **anchored in the measured baseline** (not arbitrary) and does not regress vs. the recorded champion. Wired into the CI gate.
 - **Done:** the gate fails CI on a deliberate accuracy regression, passes on the current core.
 
@@ -86,8 +87,10 @@ Decomposes the one-line roadmap step ("port the pure domain core, test-first") i
 - Property tooling: **CsCheck** (already referenced; `tests/Wfm.Forecasting.Domain.Tests/DomainPropertyHarnessTests.cs` is the seed). Golden fixtures live beside the domain tests.
 - This is the build-out of ADR-006's three-layer strategy for forecasting; the seed-invariant list there is owned by domain expertise and grows as we port.
 
-## Open questions (resolve before the affected slice, not now)
-- 9b: confirm **NodaTime** as the domain tz library (vs. `TimeZoneInfo`, which has weaker cross-platform IANA support on Windows) and the DST-transition v1 simplification.
-- 9d/9e: do timezone/operating-hours/special-days/events persist on the `Skill` (JSONB edge, ADR-002) now, or stay pure value objects until the ingestion slice (step 10)? Leaning: value objects now, persist in step 10.
-- 9f: expose Erlang inputs as per-Skill config now or hardcode demo defaults until a later staffing slice? Leaning: value objects now, persistence later.
-- 9h: which series is the frozen corpus — `historical.csv`, `historical-cs.csv`, or both? And the exact anchored threshold (set from the measured baseline once 9a–9g land).
+## Status — step 9 complete ✅
+All eight slices (9a–9h) are merged. The pure forecasting domain core is ported, golden-locked, property-checked, and accuracy-gated. Next: **step 10** (interval-stats storage + ingestion) and **step 11** (wire end-to-end: trigger → worker → forecast → persist → API → React chart) — where the forecasting config value objects (timezone, operating hours, special days, events) and the Erlang inputs get persisted on the `Skill`.
+
+## Resolved decisions (were open during the build)
+- 9b: **NodaTime** confirmed as the domain tz library (better cross-platform IANA than `TimeZoneInfo`); DST-transition v1 simplification accepted.
+- 9d/9e/9f: forecasting config + Erlang inputs stay **pure value objects** for now; persisted on the `Skill` at the ingestion slice (step 10).
+- 9h: frozen corpus = **both** series (`historical.csv` + `historical-cs.csv`); threshold = committed baseline **− 0.5pt**, ratcheted.
