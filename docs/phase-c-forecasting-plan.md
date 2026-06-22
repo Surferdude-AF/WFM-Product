@@ -60,7 +60,8 @@ Decomposes the one-line roadmap step ("port the pure domain core, test-first") i
 - **Golden:** a known forecast week with one and with two overlapping events.
 - **Out of scope (later phase):** `copilot.js` — the LLM that *proposes* events. Guardrail (duplo): the LLM fills the same `Event` schema a human would and the deterministic engine here does the math; it never writes a forecast number. Wired as an application/adapter concern with a human-approval loop after the core lands.
 
-### 9f — Erlang A staffing
+### 9f — Erlang A staffing ✔ DONE
+*`ErlangA` (Palm M/M/c+M): `ProbabilityWait` (log-space sum), `ServiceLevel`, `RequiredAgents` (fewest agents meeting SL target AND occupancy cap, with the ceil(a/occ) fallback). Golden reproduces a 26-point staffing grid (incl. occupancy-cap + fallback) and raw service levels to 9 dp; properties: contacts=0 → 0 agents, monotone in contacts, SL non-decreasing in agents, SL ≤ 1 always and a valid fraction when adequately staffed (it can go negative under severe understaffing — the formula is an approximation). Independent of the forecast path.*
 - **Port:** `erlangAPWait` (log-space, Palm M/M/c+M, tail cutoff), `erlangASL` (`1 − Pwait·e^{…}`), `erlangAStaff` (min agents meeting SL target **and** occupancy cap; `λ=contacts/900`).
 - **Invariants:** monotonicity — more contacts (same params) never decreases required agents; SL is non-decreasing in agent count; `contacts=0 → 0 agents`; reduces toward Erlang C as patience→∞.
 - **Golden:** staffing curve for a grid of (contacts, AHT, patience, SL) against recorded prototype output (this is the numerically fiddly one — golden is the safety net for the log-space sum).
