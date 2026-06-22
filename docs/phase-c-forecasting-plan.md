@@ -33,7 +33,8 @@ Decomposes the one-line roadmap step ("port the pure domain core, test-first") i
 - **Invariants (ADR-006 seed):** volume ≥ 0; determinism (same input → identical output); flat history → flat forecast; scale equivariance (×k history → ×k forecast, naive method); AHT ≥ 60.
 - **Done:** golden + invariants green; pure (no I/O); boundary check passes.
 
-### 9b — Skill timezone & UTC↔local conversion *(new; precedes everything that reasons in local time)*
+### 9b — Skill timezone & UTC↔local conversion *(new; precedes everything that reasons in local time)* ✔ DONE
+*`SkillTimeZone` (IANA via NodaTime, unset → UTC, lenient DST) + `LocalizedForecaster` wrapping 9a: UTC history → local before grouping, forecast a local week, output → UTC instants. Tests: UTC-identity vs `BaselineForecaster`, summer/winter Berlin conversion, round-trip away from transitions, local-week→UTC instants, profile shift (09:00Z → 11:00 CEST), and a DST-spanning week. NodaTime tz-db pinned by package version for golden stability.*
 - **Build:** `Skill.TimeZoneId` (IANA; unset → UTC). A pure converter (NodaTime, pinned tz-db) that maps UTC `HistoricalInterval`s to Skill-local interval records *before* 9a groups them, and maps the forecast week local → UTC *after*. The forecast week is built on a **local** Monday start (injected).
 - **DST policy (v1):** local wall-clock, fixed 96 intervals/day; transition days (92/100 intervals) are a documented known simplification.
 - **Invariants:** UTC skill (or unset tz) is identity vs. 9a alone; round-trip UTC→local→UTC preserves the instant off-transition; a CET interval lands on the expected local dow/index for a known instant.
