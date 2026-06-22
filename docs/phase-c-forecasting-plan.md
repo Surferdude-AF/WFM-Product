@@ -26,7 +26,8 @@ Decomposes the one-line roadmap step ("port the pure domain core, test-first") i
 
 ## Slices (each = one red→green PR; golden + property tests)
 
-### 9a — Baseline forecast core *(first slice; thinnest real value)*
+### 9a — Baseline forecast core *(first slice; thinnest real value)* ✔ DONE
+*Ported `groupRecords`/`wavg`/`forecastWeek`/`wmape` as `BaselineForecaster` + `ForecastAccuracy` (`HistoricalInterval`/`ForecastPoint` value objects). Golden test reproduces the prototype byte-for-byte over the frozen `historical.csv`; property tests cover non-negativity, AHT floor, determinism, flat→flat, scale equivariance, and WMAPE scale-invariance. Rounding matches JS `Math.round` (away-from-zero, not banker's). No outlier exclusion (9c).*
 - **Port:** `parseTS`, `groupRecords` (key `utcDow-intervalIdx`, history sorted oldest→newest), `wavg` (linear-ramp weights `i+1`), `forecastWeek` (7×96; `contacts=max(0,round(wavg))`, `aht=max(60,round(wavg))`; empty history → `contacts=0, aht=300`), `wmape` (`Σ|a−f| / Σa ×100`, `0` when `Σa=0`).
 - **Golden:** group+forecast a frozen ≥4-week slice of `historical.csv` → recorded `ForecastPoint[]`; `wmape` over a recorded hold-out pairing.
 - **Invariants (ADR-006 seed):** volume ≥ 0; determinism (same input → identical output); flat history → flat forecast; scale equivariance (×k history → ×k forecast, naive method); AHT ≥ 60.
