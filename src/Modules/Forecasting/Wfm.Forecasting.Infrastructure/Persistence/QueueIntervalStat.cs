@@ -1,3 +1,4 @@
+using Wfm.Forecasting.Domain;
 using Wfm.SharedKernel;
 
 namespace Wfm.Forecasting.Infrastructure.Persistence;
@@ -25,4 +26,11 @@ public sealed class QueueIntervalStat
     public DateTimeOffset IntervalStart { get; private set; }
     public int Contacts { get; private set; }
     public int AhtSeconds { get; private set; }
+
+    // Re-ingesting the same interval overwrites its values (idempotent upsert).
+    public void Update(int contacts, int ahtSeconds)
+    {
+        Contacts = contacts;
+        AhtSeconds = ahtSeconds;
+    }
 }

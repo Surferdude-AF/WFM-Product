@@ -28,7 +28,8 @@ Confirmed from the prototype (`server.js`): the Skill-aggregation **is** `mergeQ
 - EF keyless entity (`ToView`) → Application port `ISkillIntervalStatsReader.ForSkillAsync(SkillId) : IReadOnlyList<HistoricalInterval>`; impl in Infrastructure.
 - Tests: aggregation correctness (two queues merge → weighted AHT equals `mergeQueues`); tenant isolation through the view; chronological ordering.
 
-### 10c — CSV ingestion adapter
+### 10c — CSV ingestion adapter ✔ DONE
+*`IQueueStatsIngestion` port + `CsvQueueStatsIngestion` adapter: parse `timestamp,contacts,aht_seconds` (UTC) → idempotent upsert into `queue_interval_stats` (load-by-key then insert/`Update`). `QueueId` moved to Domain (peer to `SkillId`) so the port stays in Application. Headline test: ingest `historical.csv` → map Skill → read the view stream → `BaselineForecaster` reproduces the prototype's **skill** forecast golden (`mergeQueues`→forecast — differs from the 9a raw golden in exactly 4 zero-volume cells); re-ingest leaves the row count unchanged. **Step 10 complete.**
 - Infrastructure adapter (Application port `IIntervalStatsIngestion`): parse `timestamp,contacts,aht_seconds` (reuse prototype `loadCSV` semantics; parse timestamp as **UTC**) → upsert `queue_interval_stats` for a queue (`ON CONFLICT (queue_id, interval_start) DO UPDATE` — idempotent).
 - Tests: ingest frozen `historical.csv`→queue `support`, `historical-cs.csv`→queue `cs`; map Skills (TS→support, CS→cs); assert the `skill_interval_stats` stream fed to `BaselineForecaster` **reproduces the 9a golden** (persistence→core characterization); re-ingest → identical row count (idempotent).
 
