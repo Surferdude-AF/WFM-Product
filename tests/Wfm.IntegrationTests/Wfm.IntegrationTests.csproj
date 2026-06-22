@@ -26,4 +26,9 @@
     <ProjectReference Include="..\..\src\Modules\Forecasting\Wfm.Forecasting.Infrastructure\Wfm.Forecasting.Infrastructure.csproj" />
   </ItemGroup>
 
+  <!-- Frozen CSV + golden captured from the WFM-Take1 prototype (the spec). -->
+  <ItemGroup>
+    <None Include="Fixtures\**" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
 </Project>

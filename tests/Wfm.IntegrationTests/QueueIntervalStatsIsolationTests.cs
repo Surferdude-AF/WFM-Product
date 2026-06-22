@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using Testcontainers.PostgreSql;
 using Wfm.Forecasting.Application;
+using Wfm.Forecasting.Domain;
 using Wfm.Forecasting.Infrastructure.Persistence;
 using Wfm.SharedKernel;
 

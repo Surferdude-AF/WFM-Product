@@ -1,9 +1,8 @@
 using System.Diagnostics.CodeAnalysis;
+using Wfm.Forecasting.Domain;
 using Wfm.SharedKernel;
 
 namespace Wfm.Forecasting.Infrastructure.Persistence;
-
-public readonly record struct QueueId(Guid Value);
 
 // A routing destination in the CCaaS platform (domain term: Queue). Raw stats land
 // per Queue; a Skill aggregates 0..n Queues into one forecast stream. Tenant-scoped

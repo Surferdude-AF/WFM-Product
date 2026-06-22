@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Wfm.Forecasting.Domain;
 using Wfm.SharedKernel;
 
 namespace Wfm.Forecasting.Infrastructure.Persistence.Configurations;
