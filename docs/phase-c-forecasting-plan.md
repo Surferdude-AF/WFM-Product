@@ -46,7 +46,8 @@ Decomposes the one-line roadmap step ("port the pure domain core, test-first") i
 - **Invariants:** one extreme spike moves the forecast less than the spike itself (MAD robustness — ADR-006 seed); a constant series flags nothing; outlier set ⊆ input dates.
 - **Golden:** anomaly list for a frozen series with a known injected spike/dip.
 
-### 9d — Operating hours + holiday calendar (ST-002)
+### 9d — Operating hours + holiday calendar (ST-002) ✔ DONE
+*`OperatingSchedule.Apply` (weekly `OperatingHours` + `SpecialDay` overrides: zero out-of-hours intervals, apply volume/AHT haircuts to survivors; `OpenRange`/`SpecialDayHours`) and `HolidayCalendar` (US federal, `Holiday` is **date-only**, `UnitedStates`/`InRange`). Goldens reproduce the prototype's operating mask over a flat week and the 2026 US holidays + a year-boundary range; properties: 24/7 is identity, closed intervals forecast 0, unit haircut is identity, holidays fall in-year and ranges are sorted/bounded. Volume haircut rounds (int domain) vs the prototype's fractional value — chosen for exactness.*
 - **Port:** `timeToIdx`, `hoursToRange` (close `00:00`→96), `weekdayRange` (unset=24/7, absent weekday=closed), `dayOperating` (special-day override → closed/custom/normal + volume·AHT haircut), `applyOperatingDay` (zero out-of-hours, apply haircut); `holidays.js` (`nthWeekday`/`lastWeekday`, US federal, `holidaysInRange`). Operating hours are **local** (depends on 9b).
 - **Invariants:** a closed interval always forecasts 0 (ADR-006 seed); 24/7 leaves the forecast unchanged; haircut of 1.0 is identity.
 - **Golden:** US holidays for 2026 across a range; an operating-day mask applied to a known week.
