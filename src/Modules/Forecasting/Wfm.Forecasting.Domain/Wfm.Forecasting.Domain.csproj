@@ -7,4 +7,10 @@
     <ProjectReference Include="..\..\..\Wfm.SharedKernel\Wfm.SharedKernel.csproj" />
   </ItemGroup>
 
+  <!-- IANA time zones + DST for per-Skill localisation (9b). Pure/deterministic;
+       the bundled tz database is pinned by this version so golden output is stable. -->
+  <ItemGroup>
+    <PackageReference Include="NodaTime" Version="3.2.0" />
+  </ItemGroup>
+
 </Project>
