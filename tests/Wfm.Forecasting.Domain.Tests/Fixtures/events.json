@@ -1,0 +1,24 @@
+[
+  {
+    "name": "Drive",
+    "start": "2026-06-11",
+    "end": "2026-06-11",
+    "volume": 1.25,
+    "aht": 1,
+    "skills": [
+      "TS",
+      "CS"
+    ]
+  },
+  {
+    "name": "Midsummer holiday",
+    "start": "2026-06-19",
+    "end": "2026-06-20",
+    "volume": 0.7,
+    "aht": 1,
+    "skills": [
+      "TS",
+      "CS"
+    ]
+  }
+]
