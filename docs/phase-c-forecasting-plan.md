@@ -40,7 +40,8 @@ Decomposes the one-line roadmap step ("port the pure domain core, test-first") i
 - **Invariants:** UTC skill (or unset tz) is identity vs. 9a alone; round-trip UTC→local→UTC preserves the instant off-transition; a CET interval lands on the expected local dow/index for a known instant.
 - **Golden:** a known UTC series localized to `Europe/Berlin` across a DST boundary (recorded expected local interval keys).
 
-### 9c — Robust outlier / anomaly detection
+### 9c — Robust outlier / anomaly detection ✔ DONE
+*`OutlierDetection` (modified z-score on per-weekday median+MAD, threshold 3.5 + 10% material deviation, ratio-band fallback for thin data) with `DetectOutlierDates`, `DetectAnomalies`, and `WithoutOutlierDays` (training exclusion) + `Anomaly`/`AnomalyDirection`. Golden reproduces the prototype's 3 flagged days over `historical.csv`; properties: constant series flags nothing, outlier dates ⊆ input, and a spike day excluded restores the clean baseline while the unfiltered forecast is distorted. Exclusion is composable (`BaselineForecaster.Forecast(WithoutOutlierDays(...))`); 9a/9b stay pure.*
 - **Port:** `median`, `dayDeviations` (per-weekday median+MAD, `ratio`, modified-z `mz`), `isOutlierDev` (`|mz|>3.5 && |ratio−1|≥0.10`, else ratio band `>1.25 / <0.80`), `detectOutliers` (Set for training exclusion), `detectAnomalies` (direction+magnitude list).
 - **Invariants:** one extreme spike moves the forecast less than the spike itself (MAD robustness — ADR-006 seed); a constant series flags nothing; outlier set ⊆ input dates.
 - **Golden:** anomaly list for a frozen series with a known injected spike/dip.

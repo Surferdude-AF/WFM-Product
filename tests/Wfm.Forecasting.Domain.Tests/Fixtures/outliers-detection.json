@@ -1,0 +1,1 @@
+{"outlierDates":["2026-05-29","2026-06-03","2026-06-07"],"anomalies":[{"date":"2026-06-07","dir":"high","ratio":1.49,"total":799,"median":535},{"date":"2026-06-03","dir":"high","ratio":1.12,"total":2019,"median":1797},{"date":"2026-05-29","dir":"high","ratio":1.33,"total":2340,"median":1765}]}

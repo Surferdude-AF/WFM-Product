@@ -29,6 +29,9 @@ internal static class Fixtures
     public static GoldenForecast LoadGolden(string file = "baseline-forecast.json")
         => JsonSerializer.Deserialize<GoldenForecast>(File.ReadAllText(Path.Combine(Dir, file)))!;
 
+    public static GoldenDetection LoadDetection(string file = "outliers-detection.json")
+        => JsonSerializer.Deserialize<GoldenDetection>(File.ReadAllText(Path.Combine(Dir, file)))!;
+
     public static DateTimeOffset ParseUtc(string timestamp)
         => new(DateTime.ParseExact(timestamp, "yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None), TimeSpan.Zero);
 
@@ -44,3 +47,14 @@ internal sealed record GoldenRow(
     [property: JsonPropertyName("timestamp")] string Timestamp,
     [property: JsonPropertyName("contacts")] int Contacts,
     [property: JsonPropertyName("aht_seconds")] int AhtSeconds);
+
+internal sealed record GoldenDetection(
+    [property: JsonPropertyName("outlierDates")] IReadOnlyList<string> OutlierDates,
+    [property: JsonPropertyName("anomalies")] IReadOnlyList<GoldenAnomaly> Anomalies);
+
+internal sealed record GoldenAnomaly(
+    [property: JsonPropertyName("date")] string Date,
+    [property: JsonPropertyName("dir")] string Dir,
+    [property: JsonPropertyName("ratio")] double Ratio,
+    [property: JsonPropertyName("total")] int Total,
+    [property: JsonPropertyName("median")] double Median);
