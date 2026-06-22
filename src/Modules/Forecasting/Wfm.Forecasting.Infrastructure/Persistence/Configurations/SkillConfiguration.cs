@@ -25,6 +25,10 @@ internal sealed class SkillConfiguration : IEntityTypeConfiguration<Skill>
             .HasMaxLength(200)
             .IsRequired();
 
+        builder.Property(s => s.TimeZoneId)
+            .HasColumnName("time_zone_id")
+            .HasMaxLength(100);
+
         builder.HasIndex(s => s.TenantId);
 
         builder.HasOne<Tenant>()
