@@ -1,6 +1,7 @@
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
@@ -63,6 +64,26 @@ public sealed class SkillsEndpointTests
         var response = await client.GetAsync($"/t/{db.TenantB.Value}/skills");
 
         Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+    }
+
+    // The Dev stub trusts an unverified credential, so it must never let anyone in
+    // outside Development -- otherwise it's an auth bypass in a hosted environment.
+    // No database is needed: auth rejects the request before any data is read.
+    [Fact]
+    public async Task The_dev_stub_is_closed_outside_development()
+    {
+        using var factory = new WebApplicationFactory<Program>()
+            .WithWebHostBuilder(builder =>
+            {
+                builder.UseEnvironment("Production");
+                builder.UseSetting("ConnectionStrings:Wfm", "Host=unused;Database=unused;Username=u;Password=p");
+            });
+        var client = factory.CreateClient();
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Dev", Guid.NewGuid().ToString());
+
+        var response = await client.GetAsync($"/t/{Guid.NewGuid()}/skills");
+
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }
 }
 
@@ -128,7 +149,12 @@ internal sealed class SeededDatabase : IAsyncDisposable
     public WebApplicationFactory<Program> CreateApi() =>
         new WebApplicationFactory<Program>()
             .WithWebHostBuilder(builder =>
-                builder.UseSetting("ConnectionStrings:Wfm", AppConnectionString));
+            {
+                // The Dev auth stub only authenticates in Development (it trusts an
+                // unverified credential); pin the host there for the acceptance run.
+                builder.UseEnvironment("Development");
+                builder.UseSetting("ConnectionStrings:Wfm", AppConnectionString);
+            });
 
     public async ValueTask DisposeAsync() => await _postgres.DisposeAsync();
 }

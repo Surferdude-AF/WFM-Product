@@ -8,6 +8,9 @@ using Wfm.Forecasting.Infrastructure.Persistence;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddHttpContextAccessor();
+// The Dev stub is the only scheme today; it fails closed outside Development, so
+// hosted environments reject every request until the managed provider (ADR-008)
+// is wired as an additional scheme here.
 builder.Services
     .AddAuthentication(DevAuthenticationHandler.SchemeName)
     .AddScheme<AuthenticationSchemeOptions, DevAuthenticationHandler>(DevAuthenticationHandler.SchemeName, null);
