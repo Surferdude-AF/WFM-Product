@@ -52,7 +52,8 @@ Decomposes the one-line roadmap step ("port the pure domain core, test-first") i
 - **Invariants:** a closed interval always forecasts 0 (ADR-006 seed); 24/7 leaves the forecast unchanged; haircut of 1.0 is identity.
 - **Golden:** US holidays for 2026 across a range; an operating-day mask applied to a known week.
 
-### 9e — Events overlay *(new; deterministic engine only — copilot deferred)*
+### 9e — Events overlay *(new; deterministic engine only — copilot deferred)* ✔ DONE
+*`EventOverlay.Apply` + `ForecastEvent`: over a local date range, multiply volume/AHT by an event's factors, scoped to named Skills (empty = all), stacking overlaps multiplicatively. Golden reproduces the prototype's overlay (`events.json`: Drive ×1.25 → 125, Midsummer ×0.7 → 70) over a flat span; properties: no-events identity, out-of-scope unchanged, out-of-range unchanged, stacking commutative + non-negative. Copilot (LLM proposer) stays deferred. Volume/AHT rounded (int domain).*
 - **Port:** `applyEvents` — multiply the volume (and AHT) of forecast intervals falling in an event's **local** date range by its multipliers; multiplicative stacking when events overlap; multi-Skill scope. Base forecast stays a pure, regenerable layer underneath.
 - **Composition order:** matches `server.js` — `applyOperatingDay(applyEvents(forecast))`: events multiply first, then operating hours zero out-of-hours (a closed interval stays 0 regardless of an event multiplier).
 - **Invariants:** no events / multipliers = 1 → identity; volume ≥ 0; out-of-range intervals unchanged; stacking is order-independent (commutative product); a closed interval stays 0 after an event.

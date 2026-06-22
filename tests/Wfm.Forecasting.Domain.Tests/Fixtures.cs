@@ -38,6 +38,20 @@ internal static class Fixtures
     public static GoldenHolidays LoadHolidays(string file = "holidays.json")
         => JsonSerializer.Deserialize<GoldenHolidays>(File.ReadAllText(Path.Combine(Dir, file)))!;
 
+    public static GoldenOverlay LoadEventsOverlay(string file = "events-overlay.json")
+        => JsonSerializer.Deserialize<GoldenOverlay>(File.ReadAllText(Path.Combine(Dir, file)))!;
+
+    public static IReadOnlyList<ForecastEvent> LoadEvents(string file = "events.json")
+        => JsonSerializer.Deserialize<List<EventDto>>(File.ReadAllText(Path.Combine(Dir, file)))!
+            .Select(e => new ForecastEvent(
+                e.Name,
+                DateOnly.ParseExact(e.Start, "yyyy-MM-dd", CultureInfo.InvariantCulture),
+                DateOnly.ParseExact(e.End, "yyyy-MM-dd", CultureInfo.InvariantCulture),
+                e.Volume,
+                e.Aht,
+                e.Skills ?? []))
+            .ToList();
+
     public static DateTimeOffset ParseUtc(string timestamp)
         => new(DateTime.ParseExact(timestamp, "yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None), TimeSpan.Zero);
 
@@ -76,3 +90,17 @@ internal sealed record GoldenHolidays(
 internal sealed record GoldenHoliday(
     [property: JsonPropertyName("date")] string Date,
     [property: JsonPropertyName("name")] string Name);
+
+internal sealed record GoldenOverlay(
+    [property: JsonPropertyName("skillName")] string SkillName,
+    [property: JsonPropertyName("spanStart")] string SpanStart,
+    [property: JsonPropertyName("days")] int Days,
+    [property: JsonPropertyName("applied")] IReadOnlyList<GoldenRow> Applied);
+
+internal sealed record EventDto(
+    [property: JsonPropertyName("name")] string Name,
+    [property: JsonPropertyName("start")] string Start,
+    [property: JsonPropertyName("end")] string End,
+    [property: JsonPropertyName("volume")] double Volume,
+    [property: JsonPropertyName("aht")] double Aht,
+    [property: JsonPropertyName("skills")] IReadOnlyCollection<string>? Skills);
