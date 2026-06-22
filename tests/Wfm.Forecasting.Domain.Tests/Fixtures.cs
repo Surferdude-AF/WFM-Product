@@ -32,6 +32,12 @@ internal static class Fixtures
     public static GoldenDetection LoadDetection(string file = "outliers-detection.json")
         => JsonSerializer.Deserialize<GoldenDetection>(File.ReadAllText(Path.Combine(Dir, file)))!;
 
+    public static GoldenMask LoadMask(string file = "operating-mask.json")
+        => JsonSerializer.Deserialize<GoldenMask>(File.ReadAllText(Path.Combine(Dir, file)))!;
+
+    public static GoldenHolidays LoadHolidays(string file = "holidays.json")
+        => JsonSerializer.Deserialize<GoldenHolidays>(File.ReadAllText(Path.Combine(Dir, file)))!;
+
     public static DateTimeOffset ParseUtc(string timestamp)
         => new(DateTime.ParseExact(timestamp, "yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None), TimeSpan.Zero);
 
@@ -58,3 +64,15 @@ internal sealed record GoldenAnomaly(
     [property: JsonPropertyName("ratio")] double Ratio,
     [property: JsonPropertyName("total")] int Total,
     [property: JsonPropertyName("median")] double Median);
+
+internal sealed record GoldenMask(
+    [property: JsonPropertyName("weekStart")] string WeekStart,
+    [property: JsonPropertyName("masked")] IReadOnlyList<GoldenRow> Masked);
+
+internal sealed record GoldenHolidays(
+    [property: JsonPropertyName("year2026")] IReadOnlyList<GoldenHoliday> Year2026,
+    [property: JsonPropertyName("range")] IReadOnlyList<GoldenHoliday> Range);
+
+internal sealed record GoldenHoliday(
+    [property: JsonPropertyName("date")] string Date,
+    [property: JsonPropertyName("name")] string Name);
