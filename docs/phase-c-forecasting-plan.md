@@ -66,7 +66,8 @@ Decomposes the one-line roadmap step ("port the pure domain core, test-first") i
 - **Invariants:** monotonicity — more contacts (same params) never decreases required agents; SL is non-decreasing in agent count; `contacts=0 → 0 agents`; reduces toward Erlang C as patience→∞.
 - **Golden:** staffing curve for a grid of (contacts, AHT, patience, SL) against recorded prototype output (this is the numerically fiddly one — golden is the safety net for the log-space sum).
 
-### 9g — Trend + method competition (ST-006)
+### 9g — Trend + method competition (ST-006) ✔ DONE
+*`ForecastCompetition.Run` (+ `WeeklySlope`, `CompetitionResult`/`MethodScore`): walk-forward backtest of seasonal-naive vs seasonal-trend, parsimony+margin selection (trend must beat naive by ≥ max(1, SE-of-diff)), green/amber thresholds. Golden reproduces both frozen series — each keeps seasonal-naive (historical 88.5%, CS naive +2.5 bias vs trend −4.9, matching ST-006). Properties: <6 weeks defaults to naive, flat series keeps naive, deterministic, slope follows trend direction. Selection mirrors the prototype's 1-dp rounding; trend scaling stays fractional internally for WMAPE.*
 - **Port:** `splitIntoWeeks` (ISO-Monday key), `weeklyTotalsOf`, `weeklySlope` (OLS), `trendFactor`, `FORECASTERS` registry (`seasonal-naive`, `seasonal-trend`), `runCompetition` (walk-forward folds `w=4..weeks−2`, needs ≥6 weeks; parsimony+margin selection: upgrade to trend only if it beats naive by ≥ `max(1, SE-of-diff)`), green/amber thresholds.
 - **Invariants:** with <6 weeks → defaults to `seasonal-naive`; a registry of one method always selects that method; flat series → trend never wins (parsimony); selection is deterministic.
 - **Golden:** the competition result (chosen method, per-method accuracy/bias, thresholds) for both frozen series — `historical.csv` is expected to keep `seasonal-naive` (documented in ST-006).

@@ -44,6 +44,9 @@ internal static class Fixtures
     public static GoldenErlang LoadErlang(string file = "erlang-staffing.json")
         => JsonSerializer.Deserialize<GoldenErlang>(File.ReadAllText(Path.Combine(Dir, file)))!;
 
+    public static GoldenCompetition LoadCompetition(string file = "competition.json")
+        => JsonSerializer.Deserialize<GoldenCompetition>(File.ReadAllText(Path.Combine(Dir, file)))!;
+
     public static IReadOnlyList<ForecastEvent> LoadEvents(string file = "events.json")
         => JsonSerializer.Deserialize<List<EventDto>>(File.ReadAllText(Path.Combine(Dir, file)))!
             .Select(e => new ForecastEvent(
@@ -128,3 +131,25 @@ internal sealed record GoldenServiceLevel(
     [property: JsonPropertyName("patience")] double Patience,
     [property: JsonPropertyName("withinSecs")] double WithinSecs,
     [property: JsonPropertyName("sl")] double Sl);
+
+internal sealed record GoldenCompetition(
+    [property: JsonPropertyName("historical")] GoldenCompResult Historical,
+    [property: JsonPropertyName("cs")] GoldenCompResult Cs);
+
+internal sealed record GoldenCompResult(
+    [property: JsonPropertyName("sufficient")] bool Sufficient,
+    [property: JsonPropertyName("chosen")] string Chosen,
+    [property: JsonPropertyName("methods")] IReadOnlyList<GoldenMethod> Methods,
+    [property: JsonPropertyName("scores")] IReadOnlyList<double> Scores,
+    [property: JsonPropertyName("mean")] double Mean,
+    [property: JsonPropertyName("std")] double Std,
+    [property: JsonPropertyName("greenThreshold")] double? GreenThreshold,
+    [property: JsonPropertyName("amberThreshold")] double? AmberThreshold);
+
+internal sealed record GoldenMethod(
+    [property: JsonPropertyName("id")] string Id,
+    [property: JsonPropertyName("label")] string Label,
+    [property: JsonPropertyName("meanAcc")] double MeanAcc,
+    [property: JsonPropertyName("std")] double Std,
+    [property: JsonPropertyName("bias")] double Bias,
+    [property: JsonPropertyName("scores")] IReadOnlyList<double> Scores);
