@@ -7,6 +7,8 @@ public sealed class WfmDbContext(DbContextOptions<WfmDbContext> options) : DbCon
 {
     public DbSet<Tenant> Tenants => Set<Tenant>();
     public DbSet<Skill> Skills => Set<Skill>();
+    public DbSet<Queue> Queues => Set<Queue>();
+    public DbSet<QueueIntervalStat> QueueIntervalStats => Set<QueueIntervalStat>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
