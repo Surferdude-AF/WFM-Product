@@ -30,6 +30,11 @@ Identity is a day-one, hard-to-retrofit, security-critical decision, and it clos
 ### Traceability as a trust feature
 - **Audit `(acting user, tenant context, action)`** ([[ADR-001]] audit log). For cross-tenant **support access**, use **time-boxed, prominently-logged grants** (not standing) — turns "your vendor can see my data" into "…and every access is logged and time-limited," echoing ADR-001's defend-it-to-a-prospect theme.
 
+## Build sequencing (where the seam is today)
+- **RBAC is deferred until scheduling.** Forecasting needs none: a forecaster legitimately has access to **all** of a tenant's Skills, so tenant isolation + RLS ([[ADR-001]]) is sufficient for the entire forecasting vertical. The permission catalog (`permissions`/`roles`/`Can()`) and DB-backed `user_tenant_grants` membership only earn their place once **scheduling and other modules** introduce finer-grained access. Building them earlier would be speculative.
+- **Agents must be modelled before scheduling, and that area is unprototyped.** An agent wears three hats at once — an **employee**, a **schedulable resource** with a schedule, and a **user** with authN/authZ (this ADR). Unlike forecasting (which has the WFM-Take1 prototype-as-spec), there is no design for agents yet; expect a discovery/prototyping pass first. The employee/resource/user overlap will drive the data model and feeds back into the membership/grant model above.
+- **Scaffolding step 8 shipped a thin seam:** URL-path tenancy + a Dev authN stub that fails closed outside Development; the URL tenant is bound to the authenticated tenant claim per request. The DB-backed grant store and the managed B2B provider replace the claim check and the stub later.
+
 ## Consequences
 - Multi-tab, multi-tenant works without cross-tab leakage; tenant is cryptographically/structurally bound per request and re-validated.
 - Tenant autonomy over roles without exposing capability definitions.

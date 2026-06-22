@@ -27,3 +27,5 @@ Each step is a small, green, committable PR (trunk-based, ADR-009).
 
 ---
 **Later / heavier modules** (scheduling optimizer — DUP-007; intraday/real-time adherence — DUP-004): consider kicking off with a `Plan` sub-agent for recon. Not needed for the scaffolding above.
+
+**Before scheduling: model agents first (unprototyped).** Scheduling can't be designed until **agents** exist in the model, and that area has no prototype yet (unlike forecasting). An agent is simultaneously an **employee**, a **schedulable resource** with a schedule, and a **user** with authN/authZ (ADR-008) — expect a discovery/prototyping pass before building. This is also where RBAC starts to matter (see ADR-008 "Build sequencing"); forecasting alone needs no RBAC.
