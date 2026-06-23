@@ -1,0 +1,16 @@
+# Local dev/demo overrides, auto-merged by `docker compose up`. Runs the API in
+# Development (enables the demo seed, CORS, and the Dev auth stub) and adds the
+# frontend, so the whole demo comes up with one command at http://localhost:5173.
+# For a production-like API only, use: docker compose -f docker-compose.yml up
+services:
+  api:
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+
+  frontend:
+    build:
+      context: ./frontend
+    depends_on:
+      - api
+    ports:
+      - "5173:5173"

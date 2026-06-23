@@ -30,6 +30,3 @@ appsettings.*.local.json
 Thumbs.db
 .idea/
 *.swp
-
-# --- Local runtime state ---
-docker-compose.override.yml
