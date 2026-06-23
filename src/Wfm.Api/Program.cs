@@ -31,6 +31,7 @@ builder.Services.AddDbContext<WfmDbContext>((sp, options) =>
         .UseNpgsql(builder.Configuration.GetConnectionString("Wfm"))
         .AddInterceptors(sp.GetRequiredService<TenantSessionInterceptor>()));
 builder.Services.AddScoped<ISkillCatalog, EfSkillCatalog>();
+builder.Services.AddScoped<ISkillOperatingHoursStore, EfSkillOperatingHoursStore>();
 builder.Services.AddScoped<ISkillIntervalStatsReader, EfSkillIntervalStatsReader>();
 builder.Services.AddScoped<IForecastReader, EfForecastReader>();
 builder.Services.AddScoped<IForecastTrigger, EfForecastTrigger>();
@@ -68,6 +69,19 @@ tenant.MapGet("/skills", async (ISkillCatalog catalog, CancellationToken cancell
 {
     var skills = await catalog.ListAsync(cancellationToken);
     return Results.Ok(skills.Select(s => new { id = s.Id.Value, name = s.Name }));
+});
+
+// Configure the Skill's operating hours (ST-002 2a); the next forecast masks volume
+// to these open hours. A null/omitted `weekly` resets to always open.
+tenant.MapPut("/skills/{skillId:guid}/operating-hours", async (Guid skillId, OperatingHoursRequest request, ISkillOperatingHoursStore store, CancellationToken cancellationToken) =>
+{
+    if (!OperatingHoursRequestMapper.TryMap(request, out var hours, out var error))
+    {
+        return Results.BadRequest(new { error });
+    }
+
+    var found = await store.SetAsync(new SkillId(skillId), hours, cancellationToken);
+    return found ? Results.NoContent() : Results.NotFound();
 });
 
 // Enqueue a forecast for the Skill; the worker runs it (step 11b).

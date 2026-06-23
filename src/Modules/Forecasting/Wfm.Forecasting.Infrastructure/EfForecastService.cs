@@ -5,8 +5,8 @@ using Wfm.Forecasting.Infrastructure.Persistence;
 
 namespace Wfm.Forecasting.Infrastructure;
 
-// The thin forecast pipeline (step 11a): aggregated stats -> exclude outlier days
-// -> forecast in the Skill's timezone -> persist the week. Operating hours, events,
+// The forecast pipeline: aggregated stats -> exclude outlier days -> forecast in the
+// Skill's timezone with its operating hours masked out -> persist the week. Events,
 // competition and staffing are layered on in later slices. Runs under the caller's
 // tenant context, so RLS scopes both the reads and the writes (ADR-001).
 public sealed class EfForecastService(WfmDbContext db, ISkillIntervalStatsReader stats) : IForecastService
@@ -34,7 +34,8 @@ public sealed class EfForecastService(WfmDbContext db, ISkillIntervalStatsReader
         var latestLocal = DateOnly.FromDateTime(zone.ToLocal(history.Max(h => h.Start)).DateTime);
         var weekStart = NextMonday(latestLocal.AddDays(1));
 
-        var forecast = LocalizedForecaster.Forecast(clean, zone, weekStart);
+        var schedule = new OperatingSchedule(entity.OperatingHours);
+        var forecast = LocalizedForecaster.Forecast(clean, zone, weekStart, schedule);
 
         await db.SkillForecasts.Where(f => f.SkillId == skill).ExecuteDeleteAsync(cancellationToken);
         var generatedAt = _clock.GetUtcNow();
