@@ -4,11 +4,11 @@ The React/TypeScript single-page app (ADR-005), scaffolded with Vite. The first 
 slice (scaffolding-plan step 11c): trigger a forecast and view the curve.
 
 ## Run the demo
-The whole stack, one command (from the repo root):
+One command from the repo root — starts everything, opens the UI, tears it down on Enter:
 ```
-docker compose up --build
+./scripts/demo.ps1
 ```
-Open http://localhost:5173 and click **Forecast now**.
+Or by hand: `docker compose up --build`, then open http://localhost:5173 and click **Forecast now**.
 
 Inner loop with hot reload: `docker compose up -d postgres migrate`, then
 `dotnet run --project src/Wfm.Api` (one terminal) and `npm install && npm run dev`

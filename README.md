@@ -17,11 +17,11 @@ powershell -ExecutionPolicy Bypass -File scripts/bootstrap-dev.ps1
 ```
 
 ## Run the demo
-Bring the whole stack up — Postgres, migrations, the API, and the React UI — with one command:
+One command — starts the whole stack, opens the UI, and tears it all down when you press Enter:
 ```powershell
-docker compose up --build
+./scripts/demo.ps1
 ```
-Then open **http://localhost:5173** and click **Forecast now** to generate and view a forecast. (`docker compose` auto-merges `docker-compose.override.yml`, which runs the API in Development with a demo seed + CORS; for a production-like API only, use `docker compose -f docker-compose.yml up`.)
+Or do it by hand: `docker compose up --build`, then open **http://localhost:5173** and click **Forecast now**. (`docker compose` auto-merges `docker-compose.override.yml`, which runs the API in Development with a demo seed + CORS; for a production-like API only, use `docker compose -f docker-compose.yml up`.)
 
 Inner loop with hot reload instead: `docker compose up -d postgres migrate`, then `dotnet run --project src/Wfm.Api` in one terminal and `cd frontend && npm run dev` in another.
 
