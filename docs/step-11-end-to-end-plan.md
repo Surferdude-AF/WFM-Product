@@ -24,9 +24,10 @@ The forecast core (step 9) and the ingestion spine (step 10) exist but nothing c
 - Worker: `ForecastWorker : BackgroundService` in the API. Claim queued job (`SKIP LOCKED`) via `wfm_worker` → open a DI scope with `ITenantContext` = job's tenant → run `IForecastService` → mark done/failed. A settable `ITenantContext` (worker analogue of `RouteTenantContext`).
 - **Tests:** integration — enqueue → worker → forecast persisted; queue tenant-isolated (A can't see B; worker sees both). Acceptance — POST then poll GET returns the forecast; cross-tenant denied.
 
-### 11c — React forecast chart + e2e
-- Scaffold `frontend/` (Vite React TS). `ForecastChart` (Recharts line, contacts across the forecast week): list skills (`GET /t/{t}/skills`), trigger (`POST`), poll, render `GET .../forecast`. Dev-auth header; API CORS / Vite proxy for Development.
-- Dev seed: Development-only path to load the sample CSV for a demo tenant/skill.
+### 11c — React forecast chart + e2e ✔ DONE
+*Vite + React + TS app in `frontend/`: seeds a demo tenant/skill, lists skills, triggers a forecast, polls, and renders the week with a Recharts line. API gained Development-only CORS + a `POST /dev/seed` (synthetic diurnal data). Verified for real: the seed→trigger→worker→read loop returns a 672-point forecast (midday peak), and the Playwright e2e (generate→view) passes against the live stack. e2e runs locally, not yet in the dotnet CI gate.*
+- Scaffold `frontend/` (Vite React TS). `ForecastChart` (Recharts line, contacts across the forecast week): list skills (`GET /t/{t}/skills`), trigger (`POST`), poll, render `GET .../forecast`. Dev-auth header; API CORS for Development.
+- Dev seed: Development-only `/dev/seed` with synthetic data for a demo tenant/skill.
 - **Test:** one Playwright e2e — open app → Forecast now → chart renders.
 
 ## Verification

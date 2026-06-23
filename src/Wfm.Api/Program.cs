@@ -17,6 +17,13 @@ builder.Services
     .AddScheme<AuthenticationSchemeOptions, DevAuthenticationHandler>(DevAuthenticationHandler.SchemeName, null);
 builder.Services.AddAuthorization();
 
+// Let the local Vite dev server (a different origin) call the API in Development.
+if (builder.Environment.IsDevelopment())
+{
+    builder.Services.AddCors(options =>
+        options.AddDefaultPolicy(policy => policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()));
+}
+
 builder.Services.AddScoped<ITenantContext, RouteTenantContext>();
 builder.Services.AddScoped<TenantSessionInterceptor>();
 builder.Services.AddDbContext<WfmDbContext>((sp, options) =>
@@ -33,6 +40,18 @@ builder.Services.AddSingleton<IForecastStreamReader, InMemoryForecastStreamReade
 builder.Services.AddHostedService<ForecastWorker>();
 
 var app = builder.Build();
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseCors();
+
+    // Development-only demo seed for the UI: a fixed tenant/skill with sample data.
+    app.MapPost("/dev/seed", async (IConfiguration configuration) =>
+    {
+        var (tenantId, skillId) = await DevSeed.EnsureAsync(configuration.GetConnectionString("Wfm")!);
+        return Results.Ok(new { tenantId, skillId });
+    });
+}
 
 app.UseAuthentication();
 app.UseAuthorization();
