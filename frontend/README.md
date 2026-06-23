@@ -3,23 +3,17 @@
 The React/TypeScript single-page app (ADR-005), scaffolded with Vite. The first UI
 slice (scaffolding-plan step 11c): trigger a forecast and view the curve.
 
-## Run the demo locally
-1. Start Postgres and apply migrations:
-   ```
-   docker compose up -d --build postgres migrate
-   ```
-2. Run the API in Development (enables the demo seed, CORS, and the Dev auth stub):
-   ```
-   ASPNETCORE_ENVIRONMENT=Development ASPNETCORE_URLS=http://localhost:8080 \
-   ConnectionStrings__Wfm='Host=localhost;Port=5432;Database=wfm;Username=wfm_app;Password=wfm_app' \
-   ConnectionStrings__WfmWorker='Host=localhost;Port=5432;Database=wfm;Username=wfm_worker;Password=wfm_worker' \
-   dotnet run --project src/Wfm.Api -c Release --no-launch-profile
-   ```
-3. Run the frontend:
-   ```
-   cd frontend && npm install && npm run dev
-   ```
-   Open http://localhost:5173 and click **Forecast now**.
+## Run the demo
+One command from the repo root — starts everything, opens the UI, tears it down on Enter:
+```
+./scripts/Start-DevTestEnv.ps1
+```
+Or by hand: `docker compose up --build`, then open http://localhost:5173 and click **Forecast now**.
+
+Inner loop with hot reload: `docker compose up -d postgres migrate`, then
+`dotnet run --project src/Wfm.Api` (one terminal) and `npm install && npm run dev`
+here (another). `launchSettings.json` + `appsettings.Development.json` supply the
+Development environment and the worker connection, so no env-var juggling.
 
 The app seeds a demo tenant/skill (`POST /dev/seed`, Development only), lists skills,
 triggers a forecast, polls, and renders the next week's contacts with Recharts.
