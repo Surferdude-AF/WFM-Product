@@ -13,4 +13,9 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="10.0.9" />
   </ItemGroup>
 
+  <!-- Development demo seed data (a prototype contact series), copied next to the app. -->
+  <ItemGroup>
+    <Content Include="SeedData\**" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
 </Project>
