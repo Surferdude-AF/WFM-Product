@@ -36,6 +36,8 @@ services:
         condition: service_completed_successfully
     environment:
       ConnectionStrings__Wfm: "Host=postgres;Port=5432;Database=wfm;Username=wfm_app;Password=wfm_app"
+      # The in-process forecast worker connects as the platform role (step 11b).
+      ConnectionStrings__WfmWorker: "Host=postgres;Port=5432;Database=wfm;Username=wfm_worker;Password=wfm_worker"
     ports:
       - "8080:8080"
 

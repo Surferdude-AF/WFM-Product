@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.EntityFrameworkCore;
 using Wfm.Api;
 using Wfm.Forecasting.Application;
+using Wfm.Forecasting.Domain;
 using Wfm.Forecasting.Infrastructure;
 using Wfm.Forecasting.Infrastructure.Persistence;
 
@@ -23,7 +24,13 @@ builder.Services.AddDbContext<WfmDbContext>((sp, options) =>
         .UseNpgsql(builder.Configuration.GetConnectionString("Wfm"))
         .AddInterceptors(sp.GetRequiredService<TenantSessionInterceptor>()));
 builder.Services.AddScoped<ISkillCatalog, EfSkillCatalog>();
+builder.Services.AddScoped<ISkillIntervalStatsReader, EfSkillIntervalStatsReader>();
+builder.Services.AddScoped<IForecastReader, EfForecastReader>();
+builder.Services.AddScoped<IForecastTrigger, EfForecastTrigger>();
 builder.Services.AddSingleton<IForecastStreamReader, InMemoryForecastStreamReader>();
+
+// The forecast job loop (disabled unless a WfmWorker connection is configured).
+builder.Services.AddHostedService<ForecastWorker>();
 
 var app = builder.Build();
 
@@ -42,6 +49,22 @@ tenant.MapGet("/skills", async (ISkillCatalog catalog, CancellationToken cancell
 {
     var skills = await catalog.ListAsync(cancellationToken);
     return Results.Ok(skills.Select(s => new { id = s.Id.Value, name = s.Name }));
+});
+
+// Enqueue a forecast for the Skill; the worker runs it (step 11b).
+tenant.MapPost("/skills/{skillId:guid}/forecast", async (Guid skillId, IForecastTrigger trigger, CancellationToken cancellationToken) =>
+{
+    await trigger.EnqueueAsync(new SkillId(skillId), cancellationToken);
+    return Results.Accepted();
+});
+
+// The latest persisted forecast for the Skill, or 404 if it hasn't run yet.
+tenant.MapGet("/skills/{skillId:guid}/forecast", async (Guid skillId, IForecastReader reader, CancellationToken cancellationToken) =>
+{
+    var forecast = await reader.ForSkillAsync(new SkillId(skillId), cancellationToken);
+    return forecast.Count == 0
+        ? Results.NotFound()
+        : Results.Ok(forecast.Select(p => new { start = p.Start, contacts = p.Contacts, ahtSeconds = p.AhtSeconds }));
 });
 
 app.Run();

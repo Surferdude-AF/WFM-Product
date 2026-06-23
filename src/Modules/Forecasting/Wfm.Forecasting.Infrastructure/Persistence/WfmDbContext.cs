@@ -12,6 +12,7 @@ public sealed class WfmDbContext(DbContextOptions<WfmDbContext> options) : DbCon
     public DbSet<SkillQueue> SkillQueues => Set<SkillQueue>();
     public DbSet<SkillIntervalStat> SkillIntervalStats => Set<SkillIntervalStat>();
     public DbSet<SkillForecast> SkillForecasts => Set<SkillForecast>();
+    public DbSet<ForecastJob> ForecastJobs => Set<ForecastJob>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
