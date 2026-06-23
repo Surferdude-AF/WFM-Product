@@ -6,11 +6,12 @@ namespace Wfm.Forecasting.Domain;
 // (maps 0..n CCaaS Queues). Tenant-scoped per ADR-001.
 public sealed class Skill
 {
-    public Skill(SkillId id, TenantId tenantId, string name)
+    public Skill(SkillId id, TenantId tenantId, string name, string? timeZoneId = null)
     {
         Id = id;
         TenantId = tenantId;
         Name = name;
+        TimeZoneId = timeZoneId;
     }
 
     private Skill()
@@ -20,4 +21,8 @@ public sealed class Skill
     public SkillId Id { get; private set; }
     public TenantId TenantId { get; private set; }
     public string Name { get; private set; } = null!;
+
+    // IANA zone the Skill forecasts in (e.g. "Europe/Berlin"); null = UTC. Resolved
+    // via SkillTimeZone at forecast time (9b).
+    public string? TimeZoneId { get; private set; }
 }
