@@ -6,7 +6,7 @@ slice (scaffolding-plan step 11c): trigger a forecast and view the curve.
 ## Run the demo
 One command from the repo root — starts everything, opens the UI, tears it down on Enter:
 ```
-./scripts/demo.ps1
+./scripts/Start-DevTestEnv.ps1
 ```
 Or by hand: `docker compose up --build`, then open http://localhost:5173 and click **Forecast now**.
 

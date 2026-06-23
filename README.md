@@ -17,9 +17,9 @@ powershell -ExecutionPolicy Bypass -File scripts/bootstrap-dev.ps1
 ```
 
 ## Run the demo
-One command — starts the whole stack, opens the UI, and tears it all down when you press Enter:
+One command — starts a clean stack, opens the UI, and tears it all down when you press Enter:
 ```powershell
-./scripts/demo.ps1
+./scripts/Start-DevTestEnv.ps1
 ```
 Or do it by hand: `docker compose up --build`, then open **http://localhost:5173** and click **Forecast now**. (`docker compose` auto-merges `docker-compose.override.yml`, which runs the API in Development with a demo seed + CORS; for a production-like API only, use `docker compose -f docker-compose.yml up`.)
 

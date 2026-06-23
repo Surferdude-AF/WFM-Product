@@ -1,17 +1,20 @@
 #Requires -Version 5.1
 <#
 .SYNOPSIS
-    Start the WFM demo, open the UI, and tear it all down when you stop.
+    Start a clean local dev/test environment, open the UI, and tear it down on stop.
 .DESCRIPTION
     Builds and starts the full stack (Postgres + migrations + API + React UI) via
-    Docker Compose, waits for the API to be healthy, opens the browser, then waits.
-    Press Enter to stop and remove everything (containers + volume).
+    Docker Compose against a fresh, empty database, waits for the API to be healthy,
+    opens the browser, then waits. Press Enter to stop and remove everything
+    (containers + volume), leaving no state behind.
 .PARAMETER NoBuild
-    Skip the image rebuild for a faster restart when nothing has changed.
+    Skip the image rebuild for a faster restart when the code is unchanged. Do NOT
+    use this to review a branch: without a rebuild the images run previously built
+    code, not the current source.
 .EXAMPLE
-    ./scripts/demo.ps1
+    ./scripts/Start-DevTestEnv.ps1
 .EXAMPLE
-    ./scripts/demo.ps1 -NoBuild
+    ./scripts/Start-DevTestEnv.ps1 -NoBuild
 #>
 [CmdletBinding()]
 param(
