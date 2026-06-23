@@ -16,8 +16,17 @@ New machine? Run the day-1 bootstrap (installs .NET SDK, Node, Docker, EF tools,
 powershell -ExecutionPolicy Bypass -File scripts/bootstrap-dev.ps1
 ```
 
+## Run the demo
+Bring the whole stack up — Postgres, migrations, the API, and the React UI — with one command:
+```powershell
+docker compose up --build
+```
+Then open **http://localhost:5173** and click **Forecast now** to generate and view a forecast. (`docker compose` auto-merges `docker-compose.override.yml`, which runs the API in Development with a demo seed + CORS; for a production-like API only, use `docker compose -f docker-compose.yml up`.)
+
+Inner loop with hot reload instead: `docker compose up -d postgres migrate`, then `dotnet run --project src/Wfm.Api` in one terminal and `cd frontend && npm run dev` in another.
+
 ## The sibling repo
 Discovery, problem statements, duplos/stories (the backlog & specs), the rationale behind every decision, and the **forecasting prototype** (the executable spec for the forecasting domain core) live in **`c:\dev\WFM-Take1`**.
 
 ## Status
-**Scaffolding — Phase A not yet started.** This repo currently contains only the context the build needs (rules + ADRs + roadmap). The solution skeleton, CI, and code come next.
+**Phases A–C complete; the first end-to-end forecast vertical (scaffolding-plan step 11) is demoable** behind the green CI gate — ingest → aggregate → forecast (timezone-aware, outlier-excluded) → background worker → API → React chart. Next: enrich the pipeline (operating hours, events, method competition, Erlang staffing) and the first hosted demo env.
