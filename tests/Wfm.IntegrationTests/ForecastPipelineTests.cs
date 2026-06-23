@@ -65,6 +65,67 @@ public class ForecastPipelineTests
         Assert.Empty(await ReadAsync(postgres, tenantB, r => r.ForSkillAsync(skillA)));
     }
 
+    [DockerFact]
+    public async Task Pipeline_zeroes_the_forecast_outside_operating_hours()
+    {
+        await using var postgres = new PostgreSqlBuilder("postgres:16-alpine").Build();
+        await postgres.StartAsync();
+
+        var tenant = new TenantId(Guid.NewGuid());
+        var skill = new SkillId(Guid.NewGuid());
+        var queue = new QueueId(Guid.NewGuid());
+
+        var weekday = new OpenRange(new TimeOnly(8, 0), new TimeOnly(20, 0));
+        var hours = OperatingHours.ForWeek(new Dictionary<DayOfWeek, OpenRange>
+        {
+            [DayOfWeek.Monday] = weekday,
+            [DayOfWeek.Tuesday] = weekday,
+            [DayOfWeek.Wednesday] = weekday,
+            [DayOfWeek.Thursday] = weekday,
+            [DayOfWeek.Friday] = weekday,
+        });
+
+        var ownerOptions = new DbContextOptionsBuilder<WfmDbContext>().UseNpgsql(postgres.GetConnectionString()).Options;
+        await using (var db = new WfmDbContext(ownerOptions))
+        {
+            await db.Database.MigrateAsync();
+            db.Tenants.Add(new Tenant(tenant, "Tenant"));
+            db.Skills.Add(new Skill(skill, tenant, "TS", timeZoneId: null, operatingHours: hours)); // UTC
+            db.Queues.Add(new Queue(queue, tenant, "support"));
+            db.SkillQueues.Add(new SkillQueue(skill, queue, tenant));
+            await db.SaveChangesAsync();
+        }
+
+        // Round-the-clock history: every interval would be nonzero without an operating mask.
+        await using (var app = AppDbContext(postgres, tenant))
+        {
+            for (var day = 1; day <= 2; day++)
+            {
+                for (var slot = 0; slot < 96; slot++)
+                {
+                    var start = new DateTimeOffset(2026, 6, day, 0, 0, 0, TimeSpan.Zero).AddMinutes(15 * slot);
+                    app.QueueIntervalStats.Add(new QueueIntervalStat(queue, tenant, start, 10, 300));
+                }
+            }
+
+            await app.SaveChangesAsync();
+        }
+
+        await RunAsync(postgres, tenant, svc => svc.ForecastSkillAsync(skill));
+        var forecast = await ReadAsync(postgres, tenant, r => r.ForSkillAsync(skill));
+
+        Assert.NotEmpty(forecast);
+        Assert.All(
+            forecast.Where(p => p.Start.UtcDateTime.DayOfWeek is DayOfWeek.Saturday or DayOfWeek.Sunday),
+            p => Assert.Equal(0, p.Contacts));
+        Assert.All(
+            forecast.Where(p => p.Start.UtcDateTime.DayOfWeek is not (DayOfWeek.Saturday or DayOfWeek.Sunday) && (p.Start.UtcDateTime.Hour < 8 || p.Start.UtcDateTime.Hour >= 20)),
+            p => Assert.Equal(0, p.Contacts));
+        Assert.Contains(
+            forecast.Where(p => p.Start.UtcDateTime.DayOfWeek is not (DayOfWeek.Saturday or DayOfWeek.Sunday) && p.Start.UtcDateTime.Hour >= 8 && p.Start.UtcDateTime.Hour < 20),
+            p => p.Contacts > 0);
+    }
+
     private static async Task SeedAndIngestAsync(PostgreSqlContainer postgres, TenantId tenant, SkillId skill, QueueId queue)
     {
         var ownerOptions = new DbContextOptionsBuilder<WfmDbContext>().UseNpgsql(postgres.GetConnectionString()).Options;

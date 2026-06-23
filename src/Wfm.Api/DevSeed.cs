@@ -32,7 +32,18 @@ public static class DevSeed
                 db.Tenants.Add(new Tenant(DemoTenant, "Demo Co"));
             }
 
-            db.Skills.Add(new Skill(DemoSkill, DemoTenant, "Customer Service"));
+            // Mon-Fri 08:00-20:00 (weekends closed) brackets the cs series' active
+            // window, so the masked forecast shows clean off-hours and weekend zeros.
+            var weekday = new OpenRange(new TimeOnly(8, 0), new TimeOnly(20, 0));
+            var businessHours = OperatingHours.ForWeek(new Dictionary<DayOfWeek, OpenRange>
+            {
+                [DayOfWeek.Monday] = weekday,
+                [DayOfWeek.Tuesday] = weekday,
+                [DayOfWeek.Wednesday] = weekday,
+                [DayOfWeek.Thursday] = weekday,
+                [DayOfWeek.Friday] = weekday,
+            });
+            db.Skills.Add(new Skill(DemoSkill, DemoTenant, "Customer Service", operatingHours: businessHours));
             db.Queues.Add(new Queue(DemoQueue, DemoTenant, "cs"));
             db.SkillQueues.Add(new SkillQueue(DemoSkill, DemoQueue, DemoTenant));
             await db.SaveChangesAsync();

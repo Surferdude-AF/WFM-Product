@@ -15,6 +15,10 @@ public sealed class OperatingHours
 
     public bool IsAlwaysOpen => _byWeekday is null;
 
+    // The per-weekday open ranges, or null when always open. For persistence; a
+    // weekday absent from the map is closed.
+    public IReadOnlyDictionary<DayOfWeek, OpenRange>? Weekly => _byWeekday;
+
     // Open interval span [Start, End) for a weekday, or null when closed.
     internal (int Start, int End)? RangeFor(DayOfWeek dayOfWeek)
     {

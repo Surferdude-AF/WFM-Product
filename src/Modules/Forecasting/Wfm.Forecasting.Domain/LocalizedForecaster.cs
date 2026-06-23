@@ -10,7 +10,8 @@ public static class LocalizedForecaster
     public static IReadOnlyList<ForecastPoint> Forecast(
         IReadOnlyList<HistoricalInterval> history,
         SkillTimeZone zone,
-        DateOnly weekStartLocal)
+        DateOnly weekStartLocal,
+        OperatingSchedule? schedule = null)
     {
         var localHistory = new List<HistoricalInterval>(history.Count);
         foreach (var interval in history)
@@ -20,6 +21,10 @@ public static class LocalizedForecaster
 
         var weekStart = new DateTimeOffset(weekStartLocal.ToDateTime(TimeOnly.MinValue), TimeSpan.Zero);
         var localForecast = BaselineForecaster.Forecast(localHistory, weekStart);
+
+        // The operating mask runs in the Skill's local wall-clock, before instants
+        // are converted back to UTC (ST-002 2a).
+        localForecast = (schedule ?? OperatingSchedule.AlwaysOpen).Apply(localForecast);
 
         var result = new List<ForecastPoint>(localForecast.Count);
         foreach (var point in localForecast)

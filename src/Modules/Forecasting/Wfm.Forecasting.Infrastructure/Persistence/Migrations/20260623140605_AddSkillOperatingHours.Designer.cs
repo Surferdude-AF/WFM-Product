@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Wfm.Forecasting.Infrastructure.Persistence;
@@ -11,9 +12,11 @@ using Wfm.Forecasting.Infrastructure.Persistence;
 namespace Wfm.Forecasting.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(WfmDbContext))]
-    partial class WfmDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260623140605_AddSkillOperatingHours")]
+    partial class AddSkillOperatingHours
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
