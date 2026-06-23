@@ -44,6 +44,7 @@ The production WFM product: a **modular monolith** — **C#/.NET (ASP.NET Core) 
 
 ## Where things live
 - **Capture decisions & rationale in git-tracked docs, not ephemeral assistant memory** — ADRs for architecture decisions, `/docs/scaffolding-plan.md` for build sequencing/roadmap notes. Reasoning must survive a machine change and be visible to a second contributor.
+- **`/docs/STATE.md` — the living pickup point**: what's done, what's next, and open threads (loose ends not yet ticketed). **Keep it current** — update it when a work session ends or when threads open/close, so any session (human or agent) resumes from disk, not from chat history. It's the cheap alternative to carrying a long conversation: the repo is the handoff.
 - `/docs/adr` — architecture decisions (ADR-001..011), owned here.
 - `/docs/scaffolding-plan.md` — the phased build roadmap.
 - **WFM-Take1 repo** (`c:\dev\WFM-Take1`) — problem statements, duplos/stories (the backlog & specs), the rationale behind every decision, and the **forecasting prototype** (`prototypes/forecasting`) that is the executable spec for the forecasting domain core. Consult it before building a capability; refer to a story's acceptance criteria before marking work done.

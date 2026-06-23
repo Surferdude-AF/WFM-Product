@@ -8,7 +8,8 @@ Production WFM (Workforce Management) solution for small-to-medium US inbound co
 ## Start here
 - **[CLAUDE.md](CLAUDE.md)** — engineering guide & rules (production mode).
 - **[docs/adr/](docs/adr/)** — architecture decisions (ADR-001..011): tenancy, persistence, stack, testing, repo strategy, auth, CI/CD, observability, secrets/integration.
-- **[docs/scaffolding-plan.md](docs/scaffolding-plan.md)** — the phased build roadmap. **Begin at Phase A.**
+- **[docs/scaffolding-plan.md](docs/scaffolding-plan.md)** — the phased build roadmap.
+- **[docs/STATE.md](docs/STATE.md)** — living pickup point: what's done, what's next, open threads. **Start here to resume work.**
 
 ## Dev setup
 New machine? Run the day-1 bootstrap (installs .NET SDK, Node, Docker, EF tools, pnpm):
